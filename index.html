@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bazar nabídka — Bonami</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header img { height: 28px; }
+    header h1 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+    header .subtitle { font-size: 13px; color: #888; margin-top: 2px; }
+
+    .container { max-width: 780px; margin: 0 auto; padding: 24px 16px 80px; }
+
+    /* States */
+    #state-loading, #state-error, #state-done, #state-invalid {
+      display: none;
+      text-align: center;
+      padding: 80px 24px;
+    }
+    #state-loading.active, #state-error.active, #state-done.active,
+    #state-invalid.active { display: block; }
+
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #e0e0e0;
+      border-top-color: #e2001a;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .state-icon { font-size: 48px; margin-bottom: 16px; }
+    .state-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .state-text { font-size: 14px; color: #666; line-height: 1.6; }
+
+    /* Intro banner */
+    .intro {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .intro h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .intro p { font-size: 13px; color: #555; line-height: 1.6; }
+    .already-submitted {
+      display: inline-block;
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+
+    /* Item card */
+    .item-card {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .item-card.rejected {
+      opacity: 0.55;
+      border-color: #f5a0a0;
+    }
+    .item-card.rejected .item-info { text-decoration: line-through; color: #999; }
+
+    .item-photos {
+      display: flex;
+      gap: 6px;
+      padding: 12px 12px 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .item-photos::-webkit-scrollbar { display: none; }
+    .item-photos img {
+      height: 120px;
+      border-radius: 6px;
+      object-fit: cover;
+      cursor: pointer;
+      flex-shrink: 0;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .item-photos img:hover { border-color: #e2001a; }
+    .item-photos img.main-photo { height: 140px; }
+
+    .item-body { padding: 16px; }
+    .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .item-info {}
+    .item-name { font-size: 16px; font-weight: 600; }
+    .item-category { font-size: 12px; color: #888; margin-top: 2px; }
+    .item-price-box {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .item-price-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.03em; }
+    .item-price { font-size: 22px; font-weight: 700; color: #e2001a; }
+    .item-price-sub { font-size: 11px; color: #aaa; }
+
+    .damage-text {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      border-left: 3px solid #e0e0e0;
+    }
+
+    .item-controls { margin-top: 16px; border-top: 1px solid #f0f0f0; padding-top: 14px; }
+
+    .reject-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .reject-row input[type="checkbox"] {
+      width: 18px; height: 18px;
+      accent-color: #e2001a;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .reject-row label {
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .price-note-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 10px;
+    }
+    @media (max-width: 480px) { .price-note-row { grid-template-columns: 1fr; } }
+
+    .field-group { display: flex; flex-direction: column; gap: 4px; }
+    .field-group label { font-size: 11px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em; }
+    .field-group input, .field-group textarea {
+      border: 1px solid #d0d0d0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.15s;
+      background: #fff;
+    }
+    .field-group input:focus, .field-group textarea:focus {
+      outline: none;
+      border-color: #e2001a;
+    }
+    .field-group input:disabled, .field-group textarea:disabled {
+      background: #f5f5f5;
+      color: #aaa;
+    }
+    .field-group textarea { resize: vertical; min-height: 60px; }
+
+    /* Overall section */
+    .overall-section {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 8px;
+    }
+    .overall-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+
+    .action-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: #e2001a; color: #fff; flex: 1; }
+    .btn-secondary { background: #f0f0f0; color: #333; }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+
+    /* Photo lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 8px; object-fit: contain; }
+    .lightbox-close {
+      position: fixed;
+      top: 16px; right: 20px;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      line-height: 1;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Bazar nabídka</h1>
+    <div class="subtitle">Bonami Bazar</div>
+  </div>
+</header>
+
+<div class="container">
+  <div id="state-invalid">
+    <div class="state-icon">🔗</div>
+    <div class="state-title">Neplatný odkaz</div>
+    <div class="state-text">Tento odkaz není platný. Kontaktujte Bonami Bazar.</div>
+  </div>
+
+  <div id="state-loading">
+    <div class="spinner"></div>
+    <div class="state-text">Načítám nabídku…</div>
+  </div>
+
+  <div id="state-error">
+    <div class="state-icon">⚠️</div>
+    <div class="state-title">Chyba načítání</div>
+    <div class="state-text" id="error-detail">Nepodařilo se načíst nabídku. Zkuste stránku obnovit.</div>
+  </div>
+
+  <div id="state-done">
+    <div class="state-icon">✅</div>
+    <div class="state-title">Odesláno, díky!</div>
+    <div class="state-text">Vaše odpověď byla zaznamenána. Bonami Bazar se vám ozve.</div>
+  </div>
+
+  <div id="main-content" style="display:none">
+    <div class="intro">
+      <h2 id="bazar-name">Nabídka Bazar</h2>
+      <p>Níže jsou položky, které vám nabízíme. U každé můžete navrhnout cenu nebo ji odmítnout. Na konci přidejte případnou zprávu a klikněte na <strong>Přijmout nabídku</strong>.</p>
+      <span class="already-submitted" id="already-submitted" style="display:none">
+        ⚠️ Tuto nabídku jste již odeslali. Můžete odpověď upravit a odeslat znovu.
+      </span>
+    </div>
+
+    <div id="items-container"></div>
+
+    <div class="overall-section">
+      <h3>Zpráva pro Bazar tým</h3>
+      <div class="field-group">
+        <textarea id="overall-zprava" rows="3" placeholder="Nepovinné — cokoliv, co chcete sdělit…"></textarea>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-primary" id="btn-accept">Přijmout nabídku</button>
+      <button class="btn btn-secondary" id="btn-reject-all">Odmítnout vše</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <span class="lightbox-close" id="lightbox-close">✕</span>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+  // ─── CONFIG ────────────────────────────────────────────────────────────────
+  const N8N_GET_URL   = 'https://n8n.bonami.cz/webhook/bazar-quote-read';
+  const N8N_WRITE_URL = 'https://n8n.bonami.cz/webhook/bazar-quote-write';
+  const BAZAR_TOKEN   = 'PLACEHOLDER_BAZAR_TOKEN';   // shared secret, same value set in n8n
+  // ───────────────────────────────────────────────────────────────────────────
+
+  const params   = new URLSearchParams(window.location.search);
+  const recordId = params.get('record_id');
+
+  function show(id) {
+    ['state-invalid','state-loading','state-error','state-done','main-content']
+      .forEach(s => {
+        const el = document.getElementById(s);
+        if (s === id) { el.style.display = ''; el.classList.add('active'); }
+        else { el.style.display = 'none'; el.classList.remove('active'); }
+      });
+  }
+
+  if (!recordId) { show('state-invalid'); }
+  else { loadData(); }
+
+  async function loadData() {
+    show('state-loading');
+    try {
+      const res = await fetch(`${N8N_GET_URL}?record_id=${encodeURIComponent(recordId)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      render(data);
+    } catch(e) {
+      document.getElementById('error-detail').textContent = e.message || 'Nepodařilo se načíst nabídku.';
+      show('state-error');
+    }
+  }
+
+  function render(data) {
+    document.getElementById('bazar-name').textContent = data.bazar.nazev || 'Bazar nabídka';
+
+    if (data.bazar.stav === 'Přijaté úpravy' || data.bazar.stav === 'Odmítnuto') {
+      document.getElementById('already-submitted').style.display = 'inline-block';
+    }
+
+    if (data.bazar.zprava) {
+      document.getElementById('overall-zprava').value = data.bazar.zprava;
+    }
+
+    const container = document.getElementById('items-container');
+    container.innerHTML = '';
+    (data.polozky || []).forEach(item => container.appendChild(buildCard(item)));
+
+    show('main-content');
+    document.getElementById('main-content').style.display = '';
+  }
+
+  function buildCard(item) {
+    const card = document.createElement('div');
+    card.className = 'item-card' + (item.odmítnuto ? ' rejected' : '');
+    card.dataset.id = item.id;
+
+    const cena = item.cena_zobrazena ?? item.cena_bazar;
+    const cenaFmt = cena != null ? `${Number(cena).toLocaleString('cs-CZ')} Kč` : '—';
+
+    const fotky = (item.fotky || []).map((url, i) =>
+      `<img src="${url}" alt="foto ${i+1}" class="${i===0?'main-photo':''}" data-url="${url}">`
+    ).join('');
+
+    const kategorie = [item.kategorie1, item.kategorie2].filter(Boolean).join(' / ');
+
+    card.innerHTML = `
+      ${fotky ? `<div class="item-photos">${fotky}</div>` : ''}
+      <div class="item-body">
+        <div class="item-header">
+          <div class="item-info">
+            <div class="item-name">${esc(item.nazev)}</div>
+            ${kategorie ? `<div class="item-category">${esc(kategorie)}</div>` : ''}
+          </div>
+          <div class="item-price-box">
+            <div class="item-price-label">Nabídková cena</div>
+            <div class="item-price">${cenaFmt}</div>
+            <div class="item-price-sub">Bonami Bazar</div>
+          </div>
+        </div>
+        ${item.poskozeni ? `<div class="damage-text">${esc(item.poskozeni)}</div>` : ''}
+        <div class="item-controls">
+          <div class="reject-row">
+            <input type="checkbox" id="odmit-${item.id}" ${item.odmítnuto ? 'checked' : ''}>
+            <label for="odmit-${item.id}">Nechci tuto položku</label>
+          </div>
+          <div class="price-note-row">
+            <div class="field-group">
+              <label>Moje nabídka (Kč)</label>
+              <input type="number" min="0" step="1" id="cena-${item.id}"
+                value="${item.cena_navrhovana ?? ''}"
+                placeholder="ponechat původní"
+                ${item.odmítnuto ? 'disabled' : ''}>
+            </div>
+            <div class="field-group">
+              <label>Poznámka k položce</label>
+              <textarea id="note-${item.id}" placeholder="nepovinné"
+                ${item.odmítnuto ? 'disabled' : ''}>${esc(item.poznamka || '')}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Reject checkbox toggles disabled state + card style
+    const cb = card.querySelector(`#odmit-${item.id}`);
+    cb.addEventListener('change', () => {
+      const isRejected = cb.checked;
+      card.classList.toggle('rejected', isRejected);
+      card.querySelector(`#cena-${item.id}`).disabled = isRejected;
+      card.querySelector(`#note-${item.id}`).disabled = isRejected;
+    });
+
+    // Photo lightbox
+    card.querySelectorAll('.item-photos img').forEach(img => {
+      img.addEventListener('click', () => openLightbox(img.dataset.url));
+    });
+
+    return card;
+  }
+
+  // Lightbox
+  document.getElementById('lightbox').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  function openLightbox(url) {
+    document.getElementById('lightbox-img').src = url;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+
+  // Collect all items from the DOM
+  function collectItems() {
+    return Array.from(document.querySelectorAll('.item-card')).map(card => {
+      const id = card.dataset.id;
+      const odmítnuto = card.querySelector(`#odmit-${id}`).checked;
+      const cenaVal = card.querySelector(`#cena-${id}`).value;
+      const cena = cenaVal !== '' ? Number(cenaVal) : null;
+      const poznamka = card.querySelector(`#note-${id}`).value.trim();
+      return { id, odmítnuto, cena, poznamka };
+    });
+  }
+
+  async function submit(action) {
+    const btns = document.querySelectorAll('.btn');
+    btns.forEach(b => b.disabled = true);
+
+    const payload = {
+      record_id: recordId,
+      action,
+      zprava: document.getElementById('overall-zprava').value.trim(),
+      items: action === 'odmítnout' ? [] : collectItems()
+    };
+
+    try {
+      const res = await fetch(N8N_WRITE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Bazar-Token': BAZAR_TOKEN
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      show('state-done');
+    } catch(e) {
+      btns.forEach(b => b.disabled = false);
+      alert('Odeslání se nezdařilo: ' + (e.message || 'Zkuste to znovu.'));
+    }
+  }
+
+  document.getElementById('btn-accept').addEventListener('click', () => {
+    if (confirm('Potvrdit odeslání nabídky?')) submit('přijmout');
+  });
+
+  document.getElementById('btn-reject-all').addEventListener('click', () => {
+    if (confirm('Odmítnout celou nabídku? Tato akce označí vše jako odmítnuto.')) submit('odmítnout');
+  });
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/\n/g,'<br>');
+  }
+</script>
+</body>
+</html>
