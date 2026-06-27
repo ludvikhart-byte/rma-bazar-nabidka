@@ -73,6 +73,21 @@
       margin-top: 10px;
     }
 
+    /* Summary bar */
+    .summary-bar {
+      display: flex;
+      gap: 0;
+      border-top: 1px solid #f0f0f0;
+      margin-top: 16px;
+      padding-top: 14px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .summary-item { display: flex; flex-direction: column; gap: 2px; min-width: 100px; }
+    .summary-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+    .summary-value { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+    .summary-value.highlight { color: #e2001a; font-size: 18px; }
+
     /* Item card */
     .item-card {
       background: #fff;
@@ -276,6 +291,20 @@
       <span class="already-submitted" id="already-submitted" style="display:none">
         ⚠️ Tuto nabídku jste již odeslali. Můžete odpověď upravit a odeslat znovu.
       </span>
+      <div class="summary-bar" id="summary-bar" style="display:none">
+        <div class="summary-item" id="summary-odberatel-wrap">
+          <span class="summary-label">Odběratel</span>
+          <span class="summary-value" id="summary-odberatel">—</span>
+        </div>
+        <div class="summary-item" id="summary-cena-wrap">
+          <span class="summary-label">Celková cena nabídky</span>
+          <span class="summary-value highlight" id="summary-cena">—</span>
+        </div>
+        <div class="summary-item" id="summary-doprava-wrap">
+          <span class="summary-label">Doprava</span>
+          <span class="summary-value" id="summary-doprava">—</span>
+        </div>
+      </div>
     </div>
 
     <div id="items-container"></div>
@@ -336,14 +365,37 @@
   }
 
   function render(data) {
-    document.getElementById('bazar-name').textContent = data.bazar.nazev || 'Bazar nabídka';
+    const b = data.bazar;
+    document.getElementById('bazar-name').textContent = b.nazev || 'Bazar nabídka';
 
-    if (data.bazar.stav === 'Přijaté úpravy' || data.bazar.stav === 'Odmítnuto') {
+    if (b.stav === 'Přijaté úpravy' || b.stav === 'Odmítnuto') {
       document.getElementById('already-submitted').style.display = 'inline-block';
     }
 
-    if (data.bazar.zprava) {
-      document.getElementById('overall-zprava').value = data.bazar.zprava;
+    if (b.zprava) {
+      document.getElementById('overall-zprava').value = b.zprava;
+    }
+
+    // Summary bar
+    const hasAnySummary = b.odberatel || b.cena_manual != null || b.doprava;
+    if (hasAnySummary) {
+      document.getElementById('summary-bar').style.display = 'flex';
+      if (b.odberatel) {
+        document.getElementById('summary-odberatel').textContent = b.odberatel;
+      } else {
+        document.getElementById('summary-odberatel-wrap').style.display = 'none';
+      }
+      if (b.cena_manual != null) {
+        document.getElementById('summary-cena').textContent =
+          Number(b.cena_manual).toLocaleString('cs-CZ') + ' Kč';
+      } else {
+        document.getElementById('summary-cena-wrap').style.display = 'none';
+      }
+      if (b.doprava) {
+        document.getElementById('summary-doprava').textContent = b.doprava;
+      } else {
+        document.getElementById('summary-doprava-wrap').style.display = 'none';
+      }
     }
 
     const container = document.getElementById('items-container');
