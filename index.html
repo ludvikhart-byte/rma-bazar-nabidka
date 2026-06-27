@@ -8,147 +8,204 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f7f7f7;
       color: #1a1a1a;
       min-height: 100vh;
+      font-size: 14px;
     }
 
+    /* Header */
     header {
       background: #fff;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 16px 24px;
+      border-bottom: 1px solid #e8e8e8;
+      padding: 0 32px;
+      height: 60px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    header img { height: 28px; }
-    header h1 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
-    header .subtitle { font-size: 13px; color: #888; margin-top: 2px; }
+    .header-logo {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
+    .header-logo span { color: #e2001a; }
+    .header-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
 
-    .container { max-width: 780px; margin: 0 auto; padding: 24px 16px 80px; }
+    .container { max-width: 800px; margin: 0 auto; padding: 28px 16px 100px; }
 
     /* States */
-    #state-loading, #state-error, #state-done, #state-invalid {
+    .state-box {
       display: none;
       text-align: center;
       padding: 80px 24px;
     }
-    #state-loading.active, #state-error.active, #state-done.active,
-    #state-invalid.active { display: block; }
-
+    .state-box.active { display: block; }
     .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid #e0e0e0;
+      width: 36px; height: 36px;
+      border: 3px solid #eee;
       border-top-color: #e2001a;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       margin: 0 auto 16px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .state-icon { font-size: 44px; margin-bottom: 14px; }
+    .state-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .state-text { font-size: 14px; color: #777; line-height: 1.6; }
 
-    .state-icon { font-size: 48px; margin-bottom: 16px; }
-    .state-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-    .state-text { font-size: 14px; color: #666; line-height: 1.6; }
-
-    /* Intro banner */
-    .intro {
+    /* Intro card */
+    .intro-card {
       background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 16px;
     }
-    .intro h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-    .intro p { font-size: 13px; color: #555; line-height: 1.6; }
-    .already-submitted {
-      display: inline-block;
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffc107;
+    .intro-card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+    .intro-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.65;
+    }
+
+    /* Summary strip */
+    .summary-strip {
+      display: none;
+      border-top: 1px solid #f0f0f0;
+      margin-top: 20px;
+      padding-top: 18px;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .summary-strip.visible { display: flex; }
+    .summary-item { display: flex; flex-direction: column; gap: 3px; }
+    .summary-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .summary-value { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+    .summary-value.price { color: #e2001a; font-size: 18px; }
+
+    .already-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff8e1;
+      color: #8a6d00;
+      border: 1px solid #f5c842;
       border-radius: 6px;
       padding: 6px 12px;
       font-size: 12px;
       font-weight: 500;
-      margin-top: 10px;
+      margin-top: 14px;
     }
-
-    /* Summary bar */
-    .summary-bar {
-      display: flex;
-      gap: 0;
-      border-top: 1px solid #f0f0f0;
-      margin-top: 16px;
-      padding-top: 14px;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .summary-item { display: flex; flex-direction: column; gap: 2px; min-width: 100px; }
-    .summary-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
-    .summary-value { font-size: 15px; font-weight: 600; color: #1a1a1a; }
-    .summary-value.highlight { color: #e2001a; font-size: 18px; }
 
     /* Item card */
     .item-card {
       background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 10px;
-      margin-bottom: 16px;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      margin-bottom: 14px;
       overflow: hidden;
-      transition: opacity 0.2s, border-color 0.2s;
+      transition: opacity 0.2s, border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
+    .item-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
     .item-card.rejected {
-      opacity: 0.55;
-      border-color: #f5a0a0;
+      opacity: 0.5;
+      border-color: #fccfcf;
+      box-shadow: none;
     }
-    .item-card.rejected .item-info { text-decoration: line-through; color: #999; }
+    .item-card.rejected .item-name,
+    .item-card.rejected .item-category { text-decoration: line-through; color: #bbb; }
 
+    /* Photos */
     .item-photos {
       display: flex;
       gap: 6px;
-      padding: 12px 12px 0;
+      padding: 14px 14px 0;
       overflow-x: auto;
       scrollbar-width: none;
     }
     .item-photos::-webkit-scrollbar { display: none; }
     .item-photos img {
-      height: 120px;
-      border-radius: 6px;
+      height: 150px;
+      width: auto;
+      border-radius: 8px;
       object-fit: cover;
       cursor: pointer;
       flex-shrink: 0;
       border: 2px solid transparent;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, transform 0.15s;
     }
-    .item-photos img:hover { border-color: #e2001a; }
-    .item-photos img.main-photo { height: 140px; }
+    .item-photos img:hover { border-color: #e2001a; transform: scale(1.02); }
+    .item-photos img.main-photo { height: 170px; }
 
-    .item-body { padding: 16px; }
-    .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .item-info {}
-    .item-name { font-size: 16px; font-weight: 600; }
-    .item-category { font-size: 12px; color: #888; margin-top: 2px; }
-    .item-price-box {
-      text-align: right;
-      flex-shrink: 0;
+    .item-body { padding: 16px 18px 18px; }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
     }
-    .item-price-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.03em; }
-    .item-price { font-size: 22px; font-weight: 700; color: #e2001a; }
-    .item-price-sub { font-size: 11px; color: #aaa; }
+    .item-name { font-size: 15px; font-weight: 700; line-height: 1.3; color: #1a1a1a; }
+    .item-category { font-size: 12px; color: #aaa; margin-top: 3px; }
 
-    .damage-text {
+    .item-price-box { text-align: right; flex-shrink: 0; }
+    .item-price-label {
+      font-size: 10px;
+      color: #bbb;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .item-price {
+      font-size: 24px;
+      font-weight: 800;
+      color: #e2001a;
+      line-height: 1.1;
+      margin-top: 2px;
+    }
+    .item-price-sub { font-size: 10px; color: #ccc; margin-top: 2px; }
+
+    .damage-box {
       font-size: 13px;
       color: #555;
       line-height: 1.6;
-      margin-top: 12px;
-      padding: 10px 12px;
-      background: #f9f9f9;
-      border-radius: 6px;
-      border-left: 3px solid #e0e0e0;
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: #fafafa;
+      border-radius: 8px;
+      border-left: 3px solid #e8e8e8;
     }
 
-    .item-controls { margin-top: 16px; border-top: 1px solid #f0f0f0; padding-top: 14px; }
-
+    .item-controls {
+      margin-top: 16px;
+      border-top: 1px solid #f2f2f2;
+      padding-top: 14px;
+    }
     .reject-row {
       display: flex;
       align-items: center;
@@ -166,6 +223,7 @@
       font-weight: 500;
       cursor: pointer;
       user-select: none;
+      color: #333;
     }
 
     .price-note-row {
@@ -175,151 +233,185 @@
     }
     @media (max-width: 480px) { .price-note-row { grid-template-columns: 1fr; } }
 
-    .field-group { display: flex; flex-direction: column; gap: 4px; }
-    .field-group label { font-size: 11px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em; }
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group label {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
     .field-group input, .field-group textarea {
-      border: 1px solid #d0d0d0;
-      border-radius: 6px;
-      padding: 8px 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 9px 12px;
       font-size: 14px;
       font-family: inherit;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
       background: #fff;
+      color: #1a1a1a;
     }
     .field-group input:focus, .field-group textarea:focus {
       outline: none;
       border-color: #e2001a;
+      box-shadow: 0 0 0 3px rgba(226,0,26,0.08);
     }
     .field-group input:disabled, .field-group textarea:disabled {
-      background: #f5f5f5;
-      color: #aaa;
+      background: #f7f7f7;
+      color: #bbb;
+      cursor: not-allowed;
     }
-    .field-group textarea { resize: vertical; min-height: 60px; }
+    .field-group textarea { resize: vertical; min-height: 62px; }
 
-    /* Overall section */
-    .overall-section {
+    /* Bottom section */
+    .bottom-card {
       background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 10px;
-      padding: 20px;
-      margin-top: 8px;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-top: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
-    .overall-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .bottom-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #1a1a1a;
+    }
 
     .action-bar {
       display: flex;
-      gap: 12px;
-      margin-top: 24px;
+      gap: 10px;
+      margin-top: 20px;
       flex-wrap: wrap;
     }
     .btn {
-      padding: 12px 24px;
+      padding: 13px 26px;
       border-radius: 8px;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       font-family: inherit;
       cursor: pointer;
       border: none;
-      transition: opacity 0.15s, transform 0.1s;
+      transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+      letter-spacing: 0.01em;
     }
-    .btn:hover { opacity: 0.88; }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary { background: #e2001a; color: #fff; flex: 1; }
-    .btn-secondary { background: #f0f0f0; color: #333; }
-    .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .btn:active { transform: scale(0.98); box-shadow: none; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-primary { background: #e2001a; color: #fff; flex: 1; min-width: 180px; }
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #555;
+      border: 1px solid #e0e0e0;
+    }
 
-    /* Photo lightbox */
+    /* Lightbox */
     .lightbox {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.88);
       z-index: 1000;
       justify-content: center;
       align-items: center;
     }
     .lightbox.open { display: flex; }
-    .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 8px; object-fit: contain; }
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 88vh;
+      border-radius: 10px;
+      object-fit: contain;
+    }
     .lightbox-close {
       position: fixed;
-      top: 16px; right: 20px;
+      top: 18px; right: 22px;
       color: #fff;
       font-size: 28px;
       cursor: pointer;
-      line-height: 1;
       user-select: none;
+      opacity: 0.8;
+      transition: opacity 0.15s;
+    }
+    .lightbox-close:hover { opacity: 1; }
+
+    /* Footer */
+    .page-footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>Bazar nabídka</h1>
-    <div class="subtitle">Bonami Bazar</div>
-  </div>
+  <span class="header-logo">bon<span>a</span>mi</span>
+  <span class="header-tag">Bazar nabídka</span>
 </header>
 
 <div class="container">
-  <div id="state-invalid">
+  <div id="state-invalid" class="state-box">
     <div class="state-icon">🔗</div>
     <div class="state-title">Neplatný odkaz</div>
     <div class="state-text">Tento odkaz není platný. Kontaktujte Bonami Bazar.</div>
   </div>
 
-  <div id="state-loading">
+  <div id="state-loading" class="state-box">
     <div class="spinner"></div>
     <div class="state-text">Načítám nabídku…</div>
   </div>
 
-  <div id="state-error">
+  <div id="state-error" class="state-box">
     <div class="state-icon">⚠️</div>
     <div class="state-title">Chyba načítání</div>
     <div class="state-text" id="error-detail">Nepodařilo se načíst nabídku. Zkuste stránku obnovit.</div>
   </div>
 
-  <div id="state-done">
+  <div id="state-done" class="state-box">
     <div class="state-icon">✅</div>
     <div class="state-title">Odesláno, díky!</div>
     <div class="state-text">Vaše odpověď byla zaznamenána. Bonami Bazar se vám ozve.</div>
   </div>
 
   <div id="main-content" style="display:none">
-    <div class="intro">
+    <div class="intro-card">
       <h2 id="bazar-name">Nabídka Bazar</h2>
       <p>Níže jsou položky, které vám nabízíme. U každé můžete navrhnout cenu nebo ji odmítnout. Na konci přidejte případnou zprávu a klikněte na <strong>Přijmout nabídku</strong>.</p>
-      <span class="already-submitted" id="already-submitted" style="display:none">
-        ⚠️ Tuto nabídku jste již odeslali. Můžete odpověď upravit a odeslat znovu.
+      <span class="already-badge" id="already-badge" style="display:none">
+        ⚠️ Tuto nabídku jste již odeslali — odpověď lze upravit a odeslat znovu.
       </span>
-      <div class="summary-bar" id="summary-bar" style="display:none">
-        <div class="summary-item" id="summary-odberatel-wrap">
+      <div class="summary-strip" id="summary-strip">
+        <div class="summary-item" id="wrap-odberatel">
           <span class="summary-label">Odběratel</span>
-          <span class="summary-value" id="summary-odberatel">—</span>
+          <span class="summary-value" id="val-odberatel"></span>
         </div>
-        <div class="summary-item" id="summary-cena-wrap">
+        <div class="summary-item" id="wrap-cena">
           <span class="summary-label">Celková cena nabídky</span>
-          <span class="summary-value highlight" id="summary-cena">—</span>
+          <span class="summary-value price" id="val-cena"></span>
         </div>
-        <div class="summary-item" id="summary-doprava-wrap">
+        <div class="summary-item" id="wrap-doprava">
           <span class="summary-label">Doprava</span>
-          <span class="summary-value" id="summary-doprava">—</span>
+          <span class="summary-value" id="val-doprava"></span>
         </div>
       </div>
     </div>
 
     <div id="items-container"></div>
 
-    <div class="overall-section">
+    <div class="bottom-card">
       <h3>Zpráva pro Bazar tým</h3>
       <div class="field-group">
         <textarea id="overall-zprava" rows="3" placeholder="Nepovinné — cokoliv, co chcete sdělit…"></textarea>
       </div>
+      <div class="action-bar">
+        <button class="btn btn-primary" id="btn-accept">Přijmout nabídku</button>
+        <button class="btn btn-secondary" id="btn-reject-all">Odmítnout vše</button>
+      </div>
     </div>
 
-    <div class="action-bar">
-      <button class="btn btn-primary" id="btn-accept">Přijmout nabídku</button>
-      <button class="btn btn-secondary" id="btn-reject-all">Odmítnout vše</button>
-    </div>
+    <div class="page-footer">Bonami Bazar · tento odkaz je určen pouze pro vás</div>
   </div>
 </div>
 
@@ -343,8 +435,11 @@
     ['state-invalid','state-loading','state-error','state-done','main-content']
       .forEach(s => {
         const el = document.getElementById(s);
-        if (s === id) { el.style.display = ''; el.classList.add('active'); }
-        else { el.style.display = 'none'; el.classList.remove('active'); }
+        const isTarget = s === id;
+        el.style.display = isTarget ? '' : 'none';
+        if (el.classList.contains('state-box')) {
+          el.classList.toggle('active', isTarget);
+        }
       });
   }
 
@@ -365,38 +460,38 @@
   }
 
   function render(data) {
-    const b = data.bazar;
+    const b = data.bazar || {};
     document.getElementById('bazar-name').textContent = b.nazev || 'Bazar nabídka';
 
     if (b.stav === 'Přijaté úpravy' || b.stav === 'Odmítnuto') {
-      document.getElementById('already-submitted').style.display = 'inline-block';
+      document.getElementById('already-badge').style.display = 'inline-flex';
     }
-
     if (b.zprava) {
       document.getElementById('overall-zprava').value = b.zprava;
     }
 
-    // Summary bar
-    const hasAnySummary = b.odberatel || b.cena_manual != null || b.doprava;
-    if (hasAnySummary) {
-      document.getElementById('summary-bar').style.display = 'flex';
-      if (b.odberatel) {
-        document.getElementById('summary-odberatel').textContent = b.odberatel;
-      } else {
-        document.getElementById('summary-odberatel-wrap').style.display = 'none';
-      }
-      if (b.cena_manual != null) {
-        document.getElementById('summary-cena').textContent =
-          Number(b.cena_manual).toLocaleString('cs-CZ') + ' Kč';
-      } else {
-        document.getElementById('summary-cena-wrap').style.display = 'none';
-      }
-      if (b.doprava) {
-        document.getElementById('summary-doprava').textContent = b.doprava;
-      } else {
-        document.getElementById('summary-doprava-wrap').style.display = 'none';
-      }
+    // Summary strip
+    let anyVisible = false;
+    if (b.odberatel) {
+      document.getElementById('val-odberatel').textContent = b.odberatel;
+      anyVisible = true;
+    } else {
+      document.getElementById('wrap-odberatel').style.display = 'none';
     }
+    if (b.cena_manual != null) {
+      document.getElementById('val-cena').textContent =
+        Number(b.cena_manual).toLocaleString('cs-CZ') + ' Kč';
+      anyVisible = true;
+    } else {
+      document.getElementById('wrap-cena').style.display = 'none';
+    }
+    if (b.doprava) {
+      document.getElementById('val-doprava').textContent = b.doprava;
+      anyVisible = true;
+    } else {
+      document.getElementById('wrap-doprava').style.display = 'none';
+    }
+    if (anyVisible) document.getElementById('summary-strip').classList.add('visible');
 
     const container = document.getElementById('items-container');
     container.innerHTML = '';
@@ -408,11 +503,13 @@
 
   function buildCard(item) {
     const card = document.createElement('div');
-    card.className = 'item-card' + (item.odmítnuto ? ' rejected' : '');
+    card.className = 'item-card' + (item['odmítnuto'] ? ' rejected' : '');
     card.dataset.id = item.id;
 
-    const cena = item.cena_zobrazena ?? item.cena_bazar;
-    const cenaFmt = cena != null ? `${Number(cena).toLocaleString('cs-CZ')} Kč` : '—';
+    const cena = item.cena_zobrazena;
+    const cenaFmt = (cena != null && cena !== 0)
+      ? Number(cena).toLocaleString('cs-CZ') + ' Kč'
+      : '—';
 
     const fotky = (item.fotky || []).map((url, i) =>
       `<img src="${url}" alt="foto ${i+1}" class="${i===0?'main-photo':''}" data-url="${url}">`
@@ -424,7 +521,7 @@
       ${fotky ? `<div class="item-photos">${fotky}</div>` : ''}
       <div class="item-body">
         <div class="item-header">
-          <div class="item-info">
+          <div>
             <div class="item-name">${esc(item.nazev)}</div>
             ${kategorie ? `<div class="item-category">${esc(kategorie)}</div>` : ''}
           </div>
@@ -434,10 +531,10 @@
             <div class="item-price-sub">Bonami Bazar</div>
           </div>
         </div>
-        ${item.poskozeni ? `<div class="damage-text">${esc(item.poskozeni)}</div>` : ''}
+        ${item.poskozeni ? `<div class="damage-box">${esc(item.poskozeni)}</div>` : ''}
         <div class="item-controls">
           <div class="reject-row">
-            <input type="checkbox" id="odmit-${item.id}" ${item.odmítnuto ? 'checked' : ''}>
+            <input type="checkbox" id="odmit-${item.id}" ${item['odmítnuto'] ? 'checked' : ''}>
             <label for="odmit-${item.id}">Nechci tuto položku</label>
           </div>
           <div class="price-note-row">
@@ -446,28 +543,26 @@
               <input type="number" min="0" step="1" id="cena-${item.id}"
                 value="${item.cena_navrhovana ?? ''}"
                 placeholder="ponechat původní"
-                ${item.odmítnuto ? 'disabled' : ''}>
+                ${item['odmítnuto'] ? 'disabled' : ''}>
             </div>
             <div class="field-group">
               <label>Poznámka k položce</label>
               <textarea id="note-${item.id}" placeholder="nepovinné"
-                ${item.odmítnuto ? 'disabled' : ''}>${esc(item.poznamka || '')}</textarea>
+                ${item['odmítnuto'] ? 'disabled' : ''}>${esc(item.poznamka || '')}</textarea>
             </div>
           </div>
         </div>
       </div>
     `;
 
-    // Reject checkbox toggles disabled state + card style
     const cb = card.querySelector(`#odmit-${item.id}`);
     cb.addEventListener('change', () => {
-      const isRejected = cb.checked;
-      card.classList.toggle('rejected', isRejected);
-      card.querySelector(`#cena-${item.id}`).disabled = isRejected;
-      card.querySelector(`#note-${item.id}`).disabled = isRejected;
+      const r = cb.checked;
+      card.classList.toggle('rejected', r);
+      card.querySelector(`#cena-${item.id}`).disabled = r;
+      card.querySelector(`#note-${item.id}`).disabled = r;
     });
 
-    // Photo lightbox
     card.querySelectorAll('.item-photos img').forEach(img => {
       img.addEventListener('click', () => openLightbox(img.dataset.url));
     });
@@ -475,7 +570,6 @@
     return card;
   }
 
-  // Lightbox
   document.getElementById('lightbox').addEventListener('click', closeLightbox);
   document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
   function openLightbox(url) {
@@ -486,7 +580,6 @@
     document.getElementById('lightbox').classList.remove('open');
   }
 
-  // Collect all items from the DOM
   function collectItems() {
     return Array.from(document.querySelectorAll('.item-card')).map(card => {
       const id = card.dataset.id;
@@ -501,21 +594,16 @@
   async function submit(action) {
     const btns = document.querySelectorAll('.btn');
     btns.forEach(b => b.disabled = true);
-
     const payload = {
       record_id: recordId,
       action,
       zprava: document.getElementById('overall-zprava').value.trim(),
       items: action === 'odmítnout' ? [] : collectItems()
     };
-
     try {
       const res = await fetch(N8N_WRITE_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Bazar-Token': BAZAR_TOKEN
-        },
+        headers: { 'Content-Type': 'application/json', 'X-Bazar-Token': BAZAR_TOKEN },
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -529,18 +617,14 @@
   document.getElementById('btn-accept').addEventListener('click', () => {
     if (confirm('Potvrdit odeslání nabídky?')) submit('přijmout');
   });
-
   document.getElementById('btn-reject-all').addEventListener('click', () => {
-    if (confirm('Odmítnout celou nabídku? Tato akce označí vše jako odmítnuto.')) submit('odmítnout');
+    if (confirm('Odmítnout celou nabídku?')) submit('odmítnout');
   });
 
   function esc(str) {
     return String(str)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/\n/g,'<br>');
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
   }
 </script>
 </body>
